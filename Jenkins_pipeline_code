@@ -1,0 +1,67 @@
+pipeline {
+    agent any
+    environment {
+        name = 'Dheeraj'
+    }
+    parameters {
+        string(name: 'person', defaultValue: 'Dheeraj Kumar', description: 'Who are you?')
+        booleanParam(name: 'Male', defaultValue: true, description: 'Gender selection')
+        choice(name: 'City', choices: ['Delhi', 'Mumbai', 'Pune'], description: 'Choose a city')
+    }
+
+    stages {
+        stage('Run a command') {
+            steps {
+                sh '''
+                ls
+                date
+                cal
+                '''
+            }
+        }
+        stage('Environment Variable') {
+            environment {
+                username = 'myusername'
+            }
+            steps {
+                sh 'echo "${BUILD_ID}"'    // Use uppercase for Jenkins environment variables
+                sh 'echo "${name}"'        // This is the environment variable defined in pipeline
+                sh 'echo "${username}"'    // This is the environment variable defined inside the stage
+            }
+        }
+        stage('Parameters') {
+            steps {
+                sh 'echo "${name}"'
+                sh 'echo "${person}"'     // This is the parameter passed from the pipeline
+            }
+        }
+        stage('Continue?') {
+            steps {
+                input(
+                    message: "Should we continue?", // Added message parameter
+                    ok: "Yes we should"
+                )
+                echo 'Deploy on Prod'
+            }
+        }
+        stage('Deploy on prod') {
+            steps {
+                echo 'Deploy on Prod'
+            }
+        }
+    }
+    post{
+        always{
+            echo 'I will alaways say hello'
+        }
+        failure{
+            echo 'Failure'
+        }    
+        success{
+            echo 'Success'
+        }
+            
+        }
+    
+    
+}
